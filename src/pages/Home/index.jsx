@@ -1,22 +1,18 @@
+import { useEffect } from 'react'
 import './style.css'
 import Trash from '../../assets/icons8.svg'
+import api from '../../services/api'
 
 function Home() {
+  let users = []
 
-  const users = [
-    {
-      id: 123,
-      name: 'Matias',
-      idade: 32,
-      email: 'matias@gmail.com',
-    },
-    {
-      id: 124,
-      name: 'Manoel',
-      idade: 31,
-      email: 'manoel@gmail.com',
-    }
-  ]
+  async function getUsers(){
+    users = await api.get('/usuarios')
+  }
+
+  useEffect(() => {
+   getUsers()
+  }, [])
 
   return (
 
@@ -30,12 +26,12 @@ function Home() {
       </form>
 
       {users.map((user) => (
-
-        <div key={user.id}>
+        
+        <div key={user.id} className="card">
           <div>
-            <p>Nome: {user.name}</p>
-            <p>Idade: {user.idade}</p>
-            <p>Email: {user.email}</p>
+            <p>Nome: <span>{user.name}</span></p>
+            <p>Idade: <span>{user.idade}</span></p>
+            <p>Email: <span>{user.email}</span></p>
           </div>
           <button>
             <img src={Trash} />
