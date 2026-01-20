@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import './style.css'
 import Trash from '../../assets/icons8.svg'
 import api from '../../services/api'
@@ -6,14 +6,37 @@ import api from '../../services/api'
 function Home() {
   const [users, setUsers] = useState([])
 
-  async function getUsers(){
+  const inputName = useRef()
+  const inputAge = useRef()
+  const inputEmail = useRef()
+
+  async function getUsers() {
     const usersFromApi = await api.get('/usuarios')
 
     setUsers(usersFromApi.data)
   }
 
+  async function createUsers() {
+
+    await api.post('/usuarios', {
+      name: inputName.current.value,
+      age: inputAge.current.value,
+      email: inputEmail.current.value
+    })
+
+    getUsers()
+  }
+
+  async function deleteUsers(id) {
+    
+    await api.delete(`/usuarios/${id}`)
+
+    getUsers()
+
+  }
+
   useEffect(() => {
-   getUsers()
+    getUsers()
   }, [])
 
   return (
@@ -21,21 +44,21 @@ function Home() {
     <div className='container'>
       <form>
         <h1>Cadastro de Usuários</h1>
-        <input name='nome' type='text' />
-        <input name='idade' type='number' />
-        <input name='e-mail' type='email' />
-        <button type='button'>Cadastrar</button>
+        <input name='nome' type='text' ref={inputName} />
+        <input name='idade' type='number' ref={inputAge} />
+        <input name='e-mail' type='email' ref={inputEmail} />
+        <button type='button' onClick={createUsers}>Cadastrar</button>
       </form>
 
       {users.map((user) => (
-        
+
         <div key={user.id} className="card">
           <div>
             <p>Nome: <span>{user.name}</span></p>
-            <p>Idade: <span>{user.idade}</span></p>
+            <p>Idade: <span>{user.age}</span></p>
             <p>Email: <span>{user.email}</span></p>
           </div>
-          <button>
+          <button onClick={() => deleteUsers(user.id)}>
             <img src={Trash} />
           </button>
         </div>
